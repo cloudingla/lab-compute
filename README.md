@@ -20,4 +20,4 @@ Pre-Requisitos:
 
 # Diagrama de Arquitectura 
 
-![Diagrama Arquitectura](http://url/to/img.png)
+![Diagrama Arquitectura](https://github.com/cloudingla/lab-compute/blob/master/images/lab-compute.png)
