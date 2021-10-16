@@ -1,0 +1,89 @@
+Description:
+  Load Balancer, Listeners and default rules
+
+Parameters:
+  Environment:
+    Type: String
+    Default: develop
+  VPCId:
+    Type: String
+  PublicSubnets:
+    Type: CommaDelimitedList
+    
+
+Resources:
+  LoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: !Sub "${Environment}-alb"
+      Subnets: !Ref PublicSubnets
+      SecurityGroups:
+        - !Ref LoadBalancerSecurityGroup
+      Tags:
+        - Key: Env
+          Value: !Ref Environment
+
+  ELBDefaultListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref LoadBalancer
+      Port: 80
+      Protocol: HTTP
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref DefaultTargetGroup
+
+
+  DefaultTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Port: 80
+      Protocol: HTTP
+      Matcher:
+        HttpCode: 200-399
+      HealthCheckPath: "/"
+      VpcId: !Ref VPCId
+      HealthCheckProtocol: HTTP
+      HealthCheckIntervalSeconds: 20
+      HealthCheckTimeoutSeconds: 10
+      HealthyThresholdCount: 10
+      UnhealthyThresholdCount: 10
+
+  LoadBalancerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for the Load Balancer
+      VpcId: !Ref VPCId
+      SecurityGroupIngress:
+        - CidrIp: 0.0.0.0/0
+          FromPort: 80
+          IpProtocol: tcp
+          ToPort: 80
+      Tags:
+        - Key: Name
+          Value: !Sub "elb-allow-web-${Environment}"
+        - Key: Env
+          Value: !Ref Environment
+
+Outputs:
+  LoadBalancerArn:
+    Value: !Ref LoadBalancer
+    Export:
+      Name: !Sub "${Environment}-LoadBalancerArn"
+  HTTPListenerArn:
+    Value: !Ref ELBDefaultListener
+    Export:
+      Name: !Sub "${Environment}-HTTPListenerArn"
+  LoadBalancerZone:
+    Value: !GetAtt LoadBalancer.CanonicalHostedZoneID
+  LoadBalancerUrl:
+    Value: !GetAtt LoadBalancer.DNSName
+  LoadBalancerSecurityGroupId:
+    Value: !GetAtt LoadBalancerSecurityGroup.GroupId
+    Export:
+      Name: !Sub "${Environment}-LoadBalancerSecurityGroupId"
+  TargetGroupName:
+    Description: A reference to a port 80 listener
+    Value: !Ref DefaultTargetGroup
+    Export:
+      Name: !Sub "${Environment}-DefaultTargetGroup"    

@@ -1,0 +1,92 @@
+
+---
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: >-
+  Resources to create an efs.
+
+Parameters:
+  EfsName:
+    Type: String
+    Default: develop-efs
+  PrivateSubnetId1:
+    Type: String
+  PrivateSubnetId2:
+    Type: String
+  VPCId:
+    Type: String
+  VPCCidr:
+    Type: String
+  Environment:
+    Type: String   
+    Description: Environment name to append to resources names and tags
+    Default: develop
+      
+
+Resources:
+  # ############### EFS   ##############
+
+  FileSystem:
+    Type: AWS::EFS::FileSystem
+    Properties: 
+      FileSystemTags: 
+        - Key: Name
+          Value: !Sub "${EfsName}-${Environment}"
+      PerformanceMode: generalPurpose
+      ThroughputMode: bursting
+  MountTarget1:
+    DependsOn:
+      - FileSystem
+      - EfsSecurityGroup
+    Type: AWS::EFS::MountTarget
+    Properties: 
+      FileSystemId: !Ref FileSystem
+      SecurityGroups: 
+        - !GetAtt EfsSecurityGroup.GroupId
+      SubnetId: !Ref PrivateSubnetId1
+  MountTarget2:
+    DependsOn:
+      - FileSystem
+      - EfsSecurityGroup
+    Type: AWS::EFS::MountTarget
+    Properties: 
+      FileSystemId: !Ref FileSystem
+      SecurityGroups: 
+        - !GetAtt EfsSecurityGroup.GroupId
+      SubnetId: !Ref PrivateSubnetId2
+
+  EfsSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref VPCId
+      GroupName: !Sub ${EfsName}-${Environment}-sg
+      GroupDescription: Security group for EFS
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 2049
+        ToPort: 2049
+        CidrIp: !Ref VPCCidr
+      - IpProtocol: tcp
+        FromPort: 2049
+        ToPort: 2049
+        CidrIp: "0.0.0.0/0"
+      SecurityGroupEgress:
+      - { IpProtocol: -1, CidrIp: "0.0.0.0/0" }
+      Tags:
+      - Key: Name
+        Value: !Sub ${EfsName}-${Environment}-sg
+      - Key: Env
+        Value: !Ref Environment
+
+
+Outputs:
+  EfsId:
+    Description: Id for EFS
+    Value: !Ref FileSystem
+    Export:
+      Name: !Sub "${Environment}-EFSId"
+
+  EfsSg:
+    Value: !Ref EfsSecurityGroup
+    Export:
+      Name: !Sub "${Environment}-EfsSg"
