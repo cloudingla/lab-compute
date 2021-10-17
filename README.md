@@ -10,7 +10,7 @@ Templates:
 Pre-Requisitos:
 
 * Necesita una VPC en su cuenta con al menos 2 subredes públicas y 2 subredes privadas.
-* Debe tener un SecureString en Parameter Group creado con el nombre `RDS_PASSWORD` el cual almacenará el password que quiere para su RDS.
+* Debe tener un SecureString en Parameter Store creado con el nombre `RDS_PASSWORD` el cual almacenará el password que quiere para su RDS.
 * Todos los templates deben estar cargados en un bucket de S3.
 
       TemplateURL: "https://<your_bucket_name>.s3.<your_region>.amazonaws.com/<template_name>"

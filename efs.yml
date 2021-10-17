@@ -3,7 +3,7 @@
 AWSTemplateFormatVersion: 2010-09-09
 
 Description: >-
-  Resources to create an efs.
+  Recursos para crear el EFS
 
 Parameters:
   EfsName:
@@ -19,7 +19,7 @@ Parameters:
     Type: String
   Environment:
     Type: String   
-    Description: Environment name to append to resources names and tags
+    Description: Nombre del ambiente
     Default: develop
       
 

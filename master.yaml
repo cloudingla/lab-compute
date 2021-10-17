@@ -1,21 +1,26 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: Parent Stack of Nested ones
+Description: Laboratorio Cloudging LA SAS
 
 Parameters:
   VPCId:
+    Description: Nombre de la llave SSH de la EC2
     Type: AWS::EC2::VPC::Id
   VPCCidr:
+    Description:  Direccion IP de la VPC
     Type: String
-    Default: 172.31.0.0/20
+    Default: 10.0.0.0/16
   PublicSubnets:
+    Description: Seleccione las 2 subredes publicas
     Type: List<AWS::EC2::Subnet::Id>
   PrivateSubnets:
+    Description: Seleccione las 2 subredes privadas
     Type: List<AWS::EC2::Subnet::Id>
   KeyName: 
-    Description: Name of an existing EC2 key pair for SSH access to the EC2 instance
+    Description: Nombre de la llave SSH de la EC2
     Type: "AWS::EC2::KeyPair::KeyName"
     Default: "aamirKP1"
   Ec2AmiId:
+    Description: Seleccione la AMI, utilice AMI Linux 2
     Type: String
     Default: "ami-074cce78125f09d61"
 
@@ -66,7 +71,3 @@ Resources:
         VPCId: !Ref VPCId
         VPCCidr: !Ref VPCCidr
         PrivateSubnets: !Join [",", !Ref PrivateSubnets]
-
-          
-
-        

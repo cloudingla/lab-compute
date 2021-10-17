@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: AWS RDS Clutser, Instance and Subnet Group for dev environment.
+Description: Cluster RDS
 Parameters:
   Environment:
     Type: String

@@ -1,5 +1,5 @@
 Description:
-  Load Balancer, Listeners and default rules
+  Balanceador de Aplicaciones, Listener y Reglas 
 
 Parameters:
   Environment:
@@ -52,7 +52,7 @@ Resources:
   LoadBalancerSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Security group for the Load Balancer
+      GroupDescription: Security group del Balanceador
       VpcId: !Ref VPCId
       SecurityGroupIngress:
         - CidrIp: 0.0.0.0/0
